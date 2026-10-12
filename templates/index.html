@@ -1,0 +1,170 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Fake Review Detector</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+    <header class="navbar">
+        <a href="/" class="brand">ReviewGuard AI</a>
+        <span class="nav-label">Smart Review Checker</span>
+    </header>
+
+    <main class="container">
+
+        <section class="hero">
+            <div class="tag">ARTIFICIAL INTELLIGENCE</div>
+
+            <h1>Is This Review <span>Real or Fake?</span></h1>
+
+            <p>
+                Analyze product reviews using machine learning
+                and receive an instant prediction.
+            </p>
+        </section>
+
+        <section class="panel">
+            <h2>Enter Your Review</h2>
+
+            <p class="muted">
+                Paste a product review below to analyze it.
+            </p>
+
+            <form action="/" method="POST">
+                <label for="review">Product review</label>
+
+                <textarea
+                    id="review"
+                    name="review"
+                    maxlength="5000"
+                    placeholder="Paste your product review here..."
+                    required
+                >{{ review }}</textarea>
+
+                <div class="field-footer">
+                    <span>Review text</span>
+                    <span id="counter">0 / 5000</span>
+                </div>
+
+                <button type="submit">Analyze Review</button>
+            </form>
+
+            {% if error %}
+            <div class="error">{{ error }}</div>
+            {% endif %}
+        </section>
+
+        {% if result %}
+        <section class="result-panel">
+
+            <div class="result-title">YOUR PREDICTION</div>
+
+            <div class="result-card {% if result.is_fake %}fake{% else %}genuine{% endif %}">
+                <div class="result-symbol">
+                    {% if result.is_fake %}⚠{% else %}✓{% endif %}
+                </div>
+
+                <div>
+                    <h2>{{ result.label }}</h2>
+
+                    <p>
+                        {% if result.is_fake %}
+                        The model found patterns associated with
+                        fake-review training examples.
+                        {% else %}
+                        The model found patterns associated with
+                        genuine-review training examples.
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <div class="probability-section">
+
+                <div class="probability-heading">
+                    <span>Fake-class probability</span>
+                    <strong>{{ result.fake_probability }}%</strong>
+                </div>
+
+                <progress
+                    class="probability-progress fake-progress"
+                    value="{{ result.fake_probability }}"
+                    max="100"
+                ></progress>
+
+                <div class="probability-heading second-heading">
+                    <span>Genuine-class probability</span>
+                    <strong>{{ result.genuine_probability }}%</strong>
+                </div>
+
+                <progress
+                    class="probability-progress genuine-progress"
+                    value="{{ result.genuine_probability }}"
+                    max="100"
+                ></progress>
+
+            </div>
+
+            <p class="warning">
+                This is a model estimate, not proof that a review
+                is fake or genuine. Predictions may be incorrect,
+                particularly with a small training dataset.
+            </p>
+
+        </section>
+        {% endif %}
+
+        <section class="info-section">
+            <h2>How It Works</h2>
+
+            <div class="info-grid">
+                <article class="info-card">
+                    <div class="number">01</div>
+                    <h3>Submit Text</h3>
+                    <p>Enter the review you want to analyze.</p>
+                </article>
+
+                <article class="info-card">
+                    <div class="number">02</div>
+                    <h3>AI Analysis</h3>
+                    <p>The model examines text patterns using TF-IDF.</p>
+                </article>
+
+                <article class="info-card">
+                    <div class="number">03</div>
+                    <h3>View Prediction</h3>
+                    <p>See the predicted class and estimated probabilities.</p>
+                </article>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        AI-Based Fake Review Detection System | Educational Project
+    </footer>
+
+    <script>
+        const reviewInput = document.getElementById("review");
+        const counter = document.getElementById("counter");
+
+        function updateCounter() {
+            counter.textContent =
+                reviewInput.value.length + " / 5000";
+        }
+
+        reviewInput.addEventListener("input", updateCounter);
+        updateCounter();
+    </script>
+</body>
+</html>
